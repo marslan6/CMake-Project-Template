@@ -8,7 +8,7 @@ int main (int argc, char** argv)
 
     if (argc >= 1)
     {
-        std::println("Mehmet ARSLAN lives in {}", argv[1]);
+        std::println("Argv is {}", argv[0]);
     }
 
     return 0;
