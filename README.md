@@ -6,6 +6,16 @@
 - CMake 3.20 or newer
 - GCC 15 (`gcc-15` / `g++-15`) — required for C++23 support
 
+### CXX_STANDARD
+The `CXX_STANDARD` property specifies which C++ standard to use. CMake version requirements by standard:
+- C++11/C++14: CMake 3.1+
+- C++17: CMake 3.8+
+- C++20: CMake 3.12+
+- C++23: CMake 3.20+ (required for this project)
+- C++26: CMake 3.25+
+
+See [CMake CXX_STANDARD documentation](https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html) for details.
+
 ### Configure
 Reads `CMakeLists.txt` and generates the build files into the `out` folder.
 Run from the same directory that contains `CMakeLists.txt`:
