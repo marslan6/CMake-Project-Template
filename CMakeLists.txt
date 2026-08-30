@@ -19,7 +19,7 @@ set(CMAKE_CXX_STANDARD 23)
 # configure step instead of silently falling back to an older standard.
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Define the executable "modern-border.bin" and list its source files.
+# Define the executable "executableBinary" and list its source files.
 # Add more .cpp files here as the project grows, e.g. src/OrderBook.cpp.
 # TODO: Configure executable name
-add_executable(modern-border src/main.cpp)
+add_executable(executableBinary src/main.cpp)

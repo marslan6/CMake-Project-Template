@@ -20,24 +20,71 @@ A minimal CMake project template targeting C++23 with GCC 15.
 | `docs/`          | Documentation                    |
 | `out/`           | Generated build files (git-ignored) |
 
-## Quick start
+## Build & run
 
-Using the makefile wrapper (run from the project root):
+Everything goes through the `makefile` (run from the project root):
+
 ```sh
-make        # configure + build
-make run    # run the program
-make fresh  # clean rebuild
-make clean  # delete the build folder
+make          # configure + build
+make run      # run the program
+make debug    # fresh configure + build with debug info (CMAKE_BUILD_TYPE=Debug)
+make rebuild  # clean rebuild
+make clean    # delete the build folder
 ```
 
-Using CMake directly:
+| Target         | Action                                            |
+|----------------|---------------------------------------------------|
+| `make` / `make all` | Configure (if needed) and build              |
+| `make run`     | Run the built program                              |
+| `make debug`   | Fresh configure + build with `CMAKE_BUILD_TYPE=Debug` (debug symbols) |
+| `make rebuild` | Throw away cached config, reconfigure, rebuild     |
+| `make clean`   | Delete the whole build folder                      |
+
+## Debugging
+
+The default `make` build has no `-g` symbols — always build with `make debug` first.
+
+### Command line (gdb)
+
 ```sh
-cmake -B out        # configure
-cmake --build out   # build
-./out/modern-border # run
+make debug
+gdb ./out/executableBinary
 ```
 
-## Build workflow
+### VS Code
+
+The `.vscode/` folder is preconfigured. Requires the **C/C++** extension
+(`ms-vscode.cpptools`) and `gdb` on `PATH`.
+
+1. Open a source file and click the gutter to set a breakpoint.
+2. Open the Run panel (`Ctrl+Shift+D`), select **Debug** in the dropdown,
+   and press `F5`.
+3. `F5` runs the `make debug` task first (via `preLaunchTask`), then launches
+   gdb on `out/executableBinary`.
+
+Stepping: `F5` continue, `F10` step over, `F11` step into, `Shift+F11` step out.
+Inspect locals in the **Variables** pane or type expressions in the
+**Debug Console** (`-exec p argc`).
+
+To pass command-line arguments, edit `"args"` in `.vscode/launch.json`:
+
+```json
+"args": ["Istanbul"]
+```
+
+| File | Role |
+|------|------|
+| `.vscode/launch.json` | Debugger config — which binary, gdb, `preLaunchTask` |
+| `.vscode/tasks.json`  | `make` wrappers; `make debug` is the pre-launch build |
+| `.vscode/c_cpp_properties.json` | IntelliSense (compiler path, C++23, GCC mode) |
+| `.vscode/settings.json` | Disables CMake Tools auto-configure and the C/C++ "debug active file" shortcut |
+
+---
+
+## Appendix: using CMake directly
+
+The `makefile` targets above are thin wrappers around these commands. Use them
+directly only if you need a step the wrapper doesn't cover.
 
 ### Configure
 Reads `CMakeLists.txt` and generates the build files into the `out` folder.
@@ -53,9 +100,15 @@ cmake --build out
 ```
 
 ### Run
-Run the resulting program:
 ```sh
-./out/modern-border
+./out/executableBinary
+```
+
+### Debug build
+Reconfigure with debug symbols (no optimization, full `-g`):
+```sh
+cmake -B out --fresh -DCMAKE_BUILD_TYPE=Debug
+cmake --build out
 ```
 
 ### Clean rebuild
@@ -66,16 +119,13 @@ cmake -B out --fresh
 cmake --build out
 ```
 
-## Make targets
+### Setting variables on the command line
+Any CMake variable can be set at configure time with `-D`:
+```sh
+cmake -B out -DCMAKE_BUILD_TYPE=RelWithDebInfo
+```
 
-| Target       | Action                                            |
-|--------------|---------------------------------------------------|
-| `make` / `make all` | Configure (if needed) and build            |
-| `make run`   | Run the built program                              |
-| `make fresh` | Throw away cached config, reconfigure, rebuild     |
-| `make clean` | Delete the whole build folder                      |
-
-## CMake reference
+## Appendix: CMake directive reference
 
 Reference for the directives used (or usable) in `CMakeLists.txt`.
 
@@ -132,9 +182,3 @@ Sets the build type, which controls optimization and debug info:
 > Makefiles used here. Multi-config generators (Visual Studio, Ninja
 > Multi-Config) instead pick the type at build time:
 > `cmake --build out --config Release`.
-
-### Setting variables on the command line
-Any CMake variable can be set at configure time with `-D`:
-```sh
-cmake -B out -DCMAKE_BUILD_TYPE=RelWithDebInfo
-```

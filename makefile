@@ -3,11 +3,11 @@
 
 # TODO: Configure below suitable with CMake
 BUILD_DIR := out
-TARGET    := modern-border
+TARGET    := executableBinary
 
 # Default target: configure (if needed) + build.
 .PHONY: all
-all: 
+all:
 	cmake -B $(BUILD_DIR)
 	cmake --build $(BUILD_DIR)
 
@@ -21,10 +21,15 @@ clean:
 run: # all
 	./$(BUILD_DIR)/$(TARGET)
 
+.PHONY: debug
+debug:
+	cmake -B $(BUILD_DIR) --fresh -DCMAKE_BUILD_TYPE=Debug
+	cmake --build $(BUILD_DIR)
+
 # Clean rebuild: throw away cached config, reconfigure, rebuild.
 # Reconfigure the project into the out folder.
 # Use this after changing the compiler.
-.PHONY: fresh
-fresh:
+.PHONY: rebuild
+rebuild:
 	cmake -B $(BUILD_DIR) --fresh
 	cmake --build $(BUILD_DIR)
