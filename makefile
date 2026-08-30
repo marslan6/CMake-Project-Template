@@ -7,7 +7,7 @@ TARGET    := modern-border
 
 # Default target: configure (if needed) + build.
 .PHONY: all
-all: 
+all:
 	cmake -B $(BUILD_DIR)
 	cmake --build $(BUILD_DIR)
 
@@ -20,6 +20,11 @@ clean:
 .PHONY: run
 run: # all
 	./$(BUILD_DIR)/$(TARGET)
+
+.PHONY: debug
+debug:
+	cmake -B $(BUILD_DIR) --fresh -DCMAKE_BUILD_TYPE=Debug
+	cmake --build $(BUILD_DIR)
 
 # Clean rebuild: throw away cached config, reconfigure, rebuild.
 # Reconfigure the project into the out folder.
