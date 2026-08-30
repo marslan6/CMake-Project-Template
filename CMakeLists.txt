@@ -9,7 +9,8 @@ set(CMAKE_CXX_COMPILER g++-15)
 
 # Project name (and implicitly enables C and C++ support).
 # Required exactly once per project.
-project(Limit-Order-Book)
+# TODO: Configure project name
+project(CMake-Cpp-23-Template)
 
 # Target C++23. This sets the default C++ standard for all targets below.
 set(CMAKE_CXX_STANDARD 23)
@@ -18,15 +19,7 @@ set(CMAKE_CXX_STANDARD 23)
 # configure step instead of silently falling back to an older standard.
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Define the executable "modern-border" and list its source files.
+# Define the executable "modern-border.bin" and list its source files.
 # Add more .cpp files here as the project grows, e.g. src/OrderBook.cpp.
+# TODO: Configure executable name
 add_executable(modern-border src/main.cpp)
-
-# Build workflow (for reference)
-# Configure: reads this file and generates build files into the "out" folder.
-# Run from the same directory that contains CMakeLists.txt:
-#   cmake -B out
-# Build: compiles the generated build system in the "out" folder.
-#   cmake --build out
-# Run the resulting program:
-#   ./out/modern-border
