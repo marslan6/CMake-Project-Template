@@ -5,7 +5,7 @@
             "name": "Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/out/modern-border",
+            "program": "${workspaceFolder}/out/executableBinary",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

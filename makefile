@@ -3,7 +3,7 @@
 
 # TODO: Configure below suitable with CMake
 BUILD_DIR := out
-TARGET    := modern-border
+TARGET    := executableBinary
 
 # Default target: configure (if needed) + build.
 .PHONY: all
