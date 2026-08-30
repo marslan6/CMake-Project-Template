@@ -1,0 +1,9 @@
+{
+    // Don't let CMake Tools auto-configure or nag on folder open;
+    // the makefile drives the build.
+    "cmake.configureOnOpen": false,
+
+    // Hide the C/C++ extension's "build and debug active file" button and
+    // its auto-detected per-compiler tasks from the debug picker.
+    "C_Cpp.debugShortcut": false
+}
