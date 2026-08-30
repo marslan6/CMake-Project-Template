@@ -23,3 +23,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Add more .cpp files here as the project grows, e.g. src/OrderBook.cpp.
 # TODO: Configure executable name
 add_executable(executableBinary src/main.cpp)
+
+# TODO: Configure executable name
+# Warnings — after the target, scoped to it. Warnings often hint at bugs.
+# Add these flags to just executableBinary.bin. Scoped. Precise.
+target_compile_options(executableBinary PRIVATE -Wall -Wextra)
