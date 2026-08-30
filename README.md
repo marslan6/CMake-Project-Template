@@ -26,7 +26,7 @@ Using the makefile wrapper (run from the project root):
 ```sh
 make        # configure + build
 make run    # run the program
-make fresh  # clean rebuild
+make rebuild  # clean rebuild
 make clean  # delete the build folder
 ```
 
@@ -68,12 +68,12 @@ cmake --build out
 
 ## Make targets
 
-| Target       | Action                                            |
-|--------------|---------------------------------------------------|
+| Target         | Action                                            |
+|----------------|---------------------------------------------------|
 | `make` / `make all` | Configure (if needed) and build            |
-| `make run`   | Run the built program                              |
-| `make fresh` | Throw away cached config, reconfigure, rebuild     |
-| `make clean` | Delete the whole build folder                      |
+| `make run`     | Run the built program                              |
+| `make rebuild` | Throw away cached config, reconfigure, rebuild     |
+| `make clean`   | Delete the whole build folder                      |
 
 ## CMake reference
 

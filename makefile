@@ -24,7 +24,7 @@ run: # all
 # Clean rebuild: throw away cached config, reconfigure, rebuild.
 # Reconfigure the project into the out folder.
 # Use this after changing the compiler.
-.PHONY: fresh
-fresh:
+.PHONY: rebuild
+rebuild:
 	cmake -B $(BUILD_DIR) --fresh
 	cmake --build $(BUILD_DIR)
