@@ -1,20 +1,43 @@
 # CMAKE Project Template
 
-## Build workflow
+A minimal CMake project template targeting C++23 with GCC 15.
 
-### Prerequisites
-- CMake 3.20 or newer
+## Prerequisites
+
+- CMake 3.20 or newer (first version that knows about C++23)
 - GCC 15 (`gcc-15` / `g++-15`) — required for C++23 support
 
-### CXX_STANDARD
-The `CXX_STANDARD` property specifies which C++ standard to use. CMake version requirements by standard:
-- C++11/C++14: CMake 3.1+
-- C++17: CMake 3.8+
-- C++20: CMake 3.12+
-- C++23: CMake 3.20+ (required for this project)
-- C++26: CMake 3.25+
+## Project layout
 
-See [CMake CXX_STANDARD documentation](https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html) for details.
+| Path             | Purpose                          |
+|------------------|----------------------------------|
+| `CMakeLists.txt` | Build configuration              |
+| `makefile`       | Convenience wrapper around CMake  |
+| `src/`           | Source files (`main.cpp`)         |
+| `include/`       | Public headers                   |
+| `tests/`         | Tests                            |
+| `bench/`         | Benchmarks                       |
+| `docs/`          | Documentation                    |
+| `out/`           | Generated build files (git-ignored) |
+
+## Quick start
+
+Using the makefile wrapper (run from the project root):
+```sh
+make        # configure + build
+make run    # run the program
+make fresh  # clean rebuild
+make clean  # delete the build folder
+```
+
+Using CMake directly:
+```sh
+cmake -B out        # configure
+cmake --build out   # build
+./out/modern-border # run
+```
+
+## Build workflow
 
 ### Configure
 Reads `CMakeLists.txt` and generates the build files into the `out` folder.
@@ -43,9 +66,29 @@ cmake -B out --fresh
 cmake --build out
 ```
 
-## Common CMake commands
+## Make targets
+
+| Target       | Action                                            |
+|--------------|---------------------------------------------------|
+| `make` / `make all` | Configure (if needed) and build            |
+| `make run`   | Run the built program                              |
+| `make fresh` | Throw away cached config, reconfigure, rebuild     |
+| `make clean` | Delete the whole build folder                      |
+
+## CMake reference
 
 Reference for the directives used (or usable) in `CMakeLists.txt`.
+
+### `CXX_STANDARD`
+The `CXX_STANDARD` property specifies which C++ standard to use. CMake version
+requirements by standard:
+- C++11/C++14: CMake 3.1+
+- C++17: CMake 3.8+
+- C++20: CMake 3.12+
+- C++23: CMake 3.20+ (required for this project)
+- C++26: CMake 3.25+
+
+See [CMake CXX_STANDARD documentation](https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html) for details.
 
 ### `add_executable`
 ```cmake
