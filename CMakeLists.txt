@@ -12,6 +12,11 @@ set(CMAKE_CXX_COMPILER g++-15)
 # TODO: Configure project name
 project(CMake-Cpp-23-Template)
 
+# Emit out/compile_commands.json: the exact compiler flags for every source
+# file. clang-tidy (and clangd) read it so they analyze the code with the same
+# standard, warnings and include paths that the real build uses.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Target C++23. This sets the default C++ standard for all targets below.
 set(CMAKE_CXX_STANDARD 23)
 
