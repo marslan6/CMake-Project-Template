@@ -3,7 +3,7 @@
 A minimal CMake project template targeting C++23 with GCC 15.
 
 ## Prerequisites
-
+ 
 ### Build (required)
 
 - **CMake 3.20+** — first version that knows about C++23.
