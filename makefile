@@ -21,6 +21,12 @@ clean:
 run: # all
 	./$(BUILD_DIR)/$(TARGET)
 
+# Style-check the sources with cpplint (Google C++ style guide).
+# See linting/README_STYLE_GUIDE.md for options and how to silence warnings.
+.PHONY: lint
+lint:
+	python3 linting/cpplint.py --recursive ./src ./include
+
 .PHONY: debug
 debug:
 	cmake -B $(BUILD_DIR) --fresh -DCMAKE_BUILD_TYPE=Debug

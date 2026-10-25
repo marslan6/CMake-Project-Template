@@ -62,6 +62,7 @@ refers to them by full path, so no symlinks are needed.
 | `tests/`         | Tests                            |
 | `bench/`         | Benchmarks                       |
 | `docs/`          | Documentation                    |
+| `linting/`       | cpplint and its style guide (`README_STYLE_GUIDE.md`) |
 | `out/`           | Generated build files (git-ignored) |
 
 ## Build & run
@@ -74,6 +75,7 @@ make run      # run the program
 make debug    # fresh configure + build with debug info (CMAKE_BUILD_TYPE=Debug)
 make rebuild  # clean rebuild
 make clean    # delete the build folder
+make lint     # style-check ./src and ./include with cpplint
 ```
 
 | Target         | Action                                            |
@@ -83,6 +85,7 @@ make clean    # delete the build folder
 | `make debug`   | Fresh configure + build with `CMAKE_BUILD_TYPE=Debug` (debug symbols) |
 | `make rebuild` | Throw away cached config, reconfigure, rebuild     |
 | `make clean`   | Delete the whole build folder                      |
+| `make lint`    | Style-check `./src` with cpplint                   |
 
 ## Static analysis (clang-tidy)
 
@@ -108,6 +111,24 @@ for one) as too slow for live editing.
 ```sh
 clang-tidy-22 -p out src/main.cpp
 ```
+
+> `.clang-tidy` stays at the project root on purpose: clangd and clang-tidy
+> discover it by walking **up** from each source file, so moving it into a
+> subfolder would hide it from the editor's live checks.
+
+## Style linting (cpplint)
+
+[cpplint](https://github.com/cpplint/cpplint) checks the sources against the
+Google C++ style guide. It lives in `linting/` alongside its own guide. Run it
+from the project root:
+
+```sh
+make lint                                        # style-check ./src and ./include
+python3 linting/cpplint.py --recursive ./src ./include   # equivalent, direct invocation
+```
+
+See [`linting/README_STYLE_GUIDE.md`](linting/README_STYLE_GUIDE.md) for the
+full command list and how to silence warnings.
 
 ## Debugging
 
