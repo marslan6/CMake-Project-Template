@@ -22,17 +22,18 @@ A minimal CMake project template targeting C++23 with GCC 15.
   sudo apt install gdb
   ```
 
-### Editor tooling (optional — clang-tidy and IntelliSense)
+### Editor tooling (optional — IntelliSense, clang-tidy, clang-format)
 
-**LLVM 22** supplies `clangd-22` (language server) and `clang-tidy-22` (static
-analysis). Prefer a recent LLVM: Ubuntu 24.04's own package is clang-tidy 18,
-which predates GCC 15's libstdc++ and may not parse its C++23 headers. Install
-from apt.llvm.org with the bundled `llvm.sh`:
+**LLVM 22** supplies `clangd-22` (language server), `clang-tidy-22` (static
+analysis) and `clang-format-22` (formatter). Prefer a recent LLVM: Ubuntu
+24.04's own package is clang-tidy 18, which predates GCC 15's libstdc++ and may
+not parse its C++23 headers. Install from apt.llvm.org with the bundled
+`llvm.sh`:
 
 ```sh
 chmod +x llvm.sh
 sudo ./llvm.sh 22
-sudo apt install clangd-22 clang-tidy-22
+sudo apt install clangd-22 clang-tidy-22 clang-format-22
 ```
 
 Binaries are version-suffixed (`clangd-22`, not `clangd`); the project config
@@ -57,12 +58,12 @@ refers to them by full path, so no symlinks are needed.
 | `CMakeLists.txt` | Build configuration              |
 | `makefile`       | Convenience wrapper around CMake  |
 | `.clang-tidy`    | Static analysis rules            |
+| `.clang-format`  | Formatting rules                 |
 | `src/`           | Source files (`main.cpp`)         |
 | `include/`       | Public headers                   |
 | `tests/`         | Tests                            |
 | `bench/`         | Benchmarks                       |
-| `docs/`          | Documentation                    |
-| `linting/`       | cpplint and its style guide (`README_STYLE_GUIDE.md`) |
+| `linting/`       | cpplint and its usage guide (`HOW_TO_USE_CPPLINT.md`) |
 | `out/`           | Generated build files (git-ignored) |
 
 ## Build & run
@@ -75,7 +76,8 @@ make run      # run the program
 make debug    # fresh configure + build with debug info (CMAKE_BUILD_TYPE=Debug)
 make rebuild  # clean rebuild
 make clean    # delete the build folder
-make lint     # style-check ./src and ./include with cpplint
+make format   # reformat ./src and ./include with clang-format
+make lint     # style-check ./src and ./include with cpplint (optional)
 ```
 
 | Target         | Action                                            |
@@ -85,7 +87,9 @@ make lint     # style-check ./src and ./include with cpplint
 | `make debug`   | Fresh configure + build with `CMAKE_BUILD_TYPE=Debug` (debug symbols) |
 | `make rebuild` | Throw away cached config, reconfigure, rebuild     |
 | `make clean`   | Delete the whole build folder                      |
-| `make lint`    | Style-check `./src` with cpplint                   |
+| `make format`  | Reformat `./src` and `./include` in place with clang-format |
+| `make format-check` | Report files that are not formatted (no edits; non-zero exit for CI) |
+| `make lint`    | Style-check `./src` and `./include` with cpplint (optional) |
 
 ## Static analysis (clang-tidy)
 
@@ -116,19 +120,46 @@ clang-tidy-22 -p out src/main.cpp
 > discover it by walking **up** from each source file, so moving it into a
 > subfolder would hide it from the editor's live checks.
 
-## Style linting (cpplint)
+## Formatting (clang-format)
 
-[cpplint](https://github.com/cpplint/cpplint) checks the sources against the
-Google C++ style guide. It lives in `linting/` alongside its own guide. Run it
-from the project root:
+Formatting rules live in `.clang-format` at the project root (based on the
+Google style, overrides listed in the file). clang-format and clangd discover
+it by walking **up** from each file, so it must stay at the root — same reason
+as `.clang-tidy`.
 
 ```sh
-make lint                                        # style-check ./src and ./include
-python3 linting/cpplint.py --recursive ./src ./include   # equivalent, direct invocation
+make format         # reformat ./src and ./include in place
+make format-check   # report unformatted files without editing (non-zero exit)
 ```
 
-See [`linting/README_STYLE_GUIDE.md`](linting/README_STYLE_GUIDE.md) for the
-full command list and how to silence warnings.
+In the editor, formatting runs **on save** by default (clangd, configured in
+the `[cpp]`/`[c]` blocks of `.vscode/settings.json`); set
+`"editor.formatOnSave": false` there to format only on demand with **Format
+Document** (`Shift+Alt+F`).
+
+`clang-tidy` applies its fix-its through this same file (`FormatStyle: file` in
+`.clang-tidy`), and `make lint` runs cpplint with `--linelength=120` to match
+`ColumnLimit`, so the tools agree.
+
+## Style linting (cpplint, optional)
+
+Formatting above is the default and covers layout. cpplint is an **optional**
+extra that flags Google style-guide issues clang-format does not (naming,
+include order, copyright headers, and so on) — run it when you want that check;
+it is not part of the normal build or save loop.
+
+[cpplint](https://github.com/cpplint/cpplint) lives in `linting/` alongside its
+own guide. Run it from the project root:
+
+```sh
+make lint                                                              # style-check ./src and ./include
+python3 linting/cpplint.py --linelength=120 --recursive ./src ./include   # same, run directly
+```
+
+`make lint` passes `--linelength=120` so cpplint matches `.clang-format`
+(cpplint defaults to 80). See
+[`linting/HOW_TO_USE_CPPLINT.md`](linting/HOW_TO_USE_CPPLINT.md) for the full
+command list and how to silence warnings.
 
 ## Debugging
 
@@ -168,7 +199,7 @@ To pass command-line arguments, edit `"args"` in `.vscode/launch.json`:
 | `.vscode/launch.json` | Debugger config — which binary, gdb, `preLaunchTask` |
 | `.vscode/tasks.json`  | `make` wrappers; `make debug` is the pre-launch build |
 | `.vscode/c_cpp_properties.json` | cpptools IntelliSense config — inert while clangd owns IntelliSense |
-| `.vscode/settings.json` | Points clangd at `clangd-22` with `--clang-tidy`; disables CMake Tools auto-configure and the C/C++ "debug active file" shortcut |
+| `.vscode/settings.json` | Points clangd at `clangd-22` with `--clang-tidy`; makes clangd the C/C++ formatter with format-on-save; disables CMake Tools auto-configure and the C/C++ "debug active file" shortcut |
 | `.clang-tidy` | Which clang-tidy checks run (project root, not `.vscode/`) |
 
 ---

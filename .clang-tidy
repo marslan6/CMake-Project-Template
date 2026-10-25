@@ -32,5 +32,5 @@ HeaderFilterRegex: '.*/(src|include|tests|bench)/.*'
 # Nothing is fatal: everything stays a warning in the Problems panel.
 WarningsAsErrors: ''
 
-# No .clang-format in this project yet, so don't try to reformat fix-its.
-FormatStyle: none
+# Apply fix-its using the project's .clang-format (at the project root).
+FormatStyle: file

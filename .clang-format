@@ -1,0 +1,26 @@
+# clang-format configuration. Discovered automatically by clang-format and by
+# clangd (the "Format Document" command / format-on-save) for every file under
+# this directory, so it lives at the project root alongside .clang-tidy.
+#
+# Options not listed here fall back to BasedOnStyle. Google is used because the
+# project follows the Google C++ style guide (that is what cpplint checks), so
+# the formatter and the linter stay in agreement. Change to LLVM or remove the
+# line to start from clang-format's own defaults instead.
+# Full list: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+---
+Language: Cpp
+BasedOnStyle: Google
+ColumnLimit: 120
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: true
+SortIncludes: CaseInsensitive
+PointerAlignment: Left
+AlignAfterOpenBracket: DontAlign
+BreakConstructorInitializers: BeforeColon
+PackConstructorInitializers: NextLineOnly
+BreakBeforeConceptDeclarations: Always
+AlwaysBreakTemplateDeclarations: Yes
