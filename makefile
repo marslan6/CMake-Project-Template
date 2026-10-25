@@ -39,7 +39,7 @@ format-check:
 
 # Style-check the sources with cpplint (Google C++ style guide).
 # --linelength=120 matches ColumnLimit in .clang-format (cpplint defaults to 80).
-# See linting/HOW_TO_USE_CPPLINT.md for options and how to silence warnings.
+# See linting/HowToUseCppLint.md for options and how to silence warnings.
 .PHONY: lint
 lint:
 	python3 linting/cpplint.py --linelength=120 --recursive ./src ./include

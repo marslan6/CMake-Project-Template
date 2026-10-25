@@ -2,8 +2,22 @@
 
 A minimal CMake project template targeting C++23 with GCC 15.
 
+## Contents
+
+- [Prerequisites](#prerequisites)
+- [Project layout](#project-layout)
+- [Build & run](#build--run)
+- [Code quality](#code-quality)
+  - [Formatting (clang-format)](#formatting-clang-format)
+  - [Static analysis (clang-tidy)](#static-analysis-clang-tidy)
+  - [Style linting (cpplint)](#style-linting-cpplint)
+- [Debugging](#debugging)
+- [Reference](#reference)
+  - [Using CMake directly](#using-cmake-directly)
+  - [CMake directive reference](#cmake-directive-reference)
+
 ## Prerequisites
- 
+
 ### Build (required)
 
 - **CMake 3.20+** — first version that knows about C++23.
@@ -64,7 +78,7 @@ refers to them by full path, so no symlinks are needed.
 | `include/`       | Public headers                   |
 | `tests/`         | Tests                            |
 | `bench/`         | Benchmarks                       |
-| `linting/`       | cpplint and its usage guide (`HOW_TO_USE_CPPLINT.md`) |
+| `linting/`       | cpplint and its usage guide (`HowToUseCppLint.md`) |
 | `out/`           | Generated build files (git-ignored) |
 
 ## Build & run
@@ -92,16 +106,49 @@ make lint     # style-check ./src and ./include with cpplint (optional)
 | `make format-check` | Report files that are not formatted (no edits; non-zero exit for CI) |
 | `make lint`    | Style-check `./src` and `./include` with cpplint (optional) |
 
-## Static analysis (clang-tidy)
+## Code quality
+
+Three tools keep the code consistent, and they are configured to agree with
+each other (120-column line length, shared fix-it formatting):
+
+- **Formatting (clang-format)** and **static analysis (clang-tidy)** run
+  automatically in the editor — no build step or task to invoke.
+- **Style linting (cpplint)** is an optional extra you run on demand; it is not
+  part of the build or save loop.
+
+The two dotfiles (`.clang-format`, `.clang-tidy`) stay at the **project root**:
+clangd and the tools discover them by walking up from each source file, so
+moving them into a subfolder would hide them from the editor's live checks.
+
+### Formatting (clang-format)
+
+Formatting rules live in `.clang-format` at the project root, based on the
+Google style with the overrides listed in the file.
+
+`make format` needs `clang-format-22` from the [Prerequisites](#prerequisites)
+step; without it the command fails with `clang-format-22: No such file or
+directory`.
+
+```sh
+make format         # reformat ./src and ./include in place
+make format-check   # report unformatted files without editing (non-zero exit)
+```
+
+In the editor, formatting runs **on save** by default (clangd, configured in
+the `[cpp]`/`[c]` blocks of `.vscode/settings.json`); set
+`"editor.formatOnSave": false` there to format only on demand with **Format
+Document** (`Shift+Alt+F`).
+
+### Static analysis (clang-tidy)
 
 Rules live in `.clang-tidy` at the project root — most check families enabled,
 a few noisy ones switched back off.
 
 clangd runs clang-tidy as you type and reports findings in the **Problems**
-panel. There is no build step or task to run. It reads the compiler flags from
-`out/compile_commands.json`, which CMake writes on every configure (see
-`CMAKE_EXPORT_COMPILE_COMMANDS` in `CMakeLists.txt`), so run `make` once on a
-fresh clone before expecting diagnostics.
+panel. It reads the compiler flags from `out/compile_commands.json`, which CMake
+writes on every configure (see `CMAKE_EXPORT_COMPILE_COMMANDS` in
+`CMakeLists.txt`), so run `make` once on a fresh clone before expecting
+diagnostics.
 
 To silence a check, add it to the disabled list in `.clang-tidy`:
 
@@ -117,40 +164,14 @@ for one) as too slow for live editing.
 clang-tidy-22 -p out src/main.cpp
 ```
 
-> `.clang-tidy` stays at the project root on purpose: clangd and clang-tidy
-> discover it by walking **up** from each source file, so moving it into a
-> subfolder would hide it from the editor's live checks.
+clang-tidy applies its fix-its through `.clang-format` (`FormatStyle: file`), so
+formatting and static analysis never disagree.
 
-## Formatting (clang-format)
+### Style linting (cpplint)
 
-Formatting rules live in `.clang-format` at the project root (based on the
-Google style, overrides listed in the file). clang-format and clangd discover
-it by walking **up** from each file, so it must stay at the root — same reason
-as `.clang-tidy`.
-
-```sh
-make format         # reformat ./src and ./include in place
-make format-check   # report unformatted files without editing (non-zero exit)
-```
-
-In the editor, formatting runs **on save** by default (clangd, configured in
-the `[cpp]`/`[c]` blocks of `.vscode/settings.json`); set
-`"editor.formatOnSave": false` there to format only on demand with **Format
-Document** (`Shift+Alt+F`).
-
-`clang-tidy` applies its fix-its through this same file (`FormatStyle: file` in
-`.clang-tidy`), and `make lint` runs cpplint with `--linelength=120` to match
-`ColumnLimit`, so the tools agree.
-
-## Style linting (cpplint, optional)
-
-Formatting above is the default and covers layout. cpplint is an **optional**
-extra that flags Google style-guide issues clang-format does not (naming,
-include order, copyright headers, and so on) — run it when you want that check;
-it is not part of the normal build or save loop.
-
-[cpplint](https://github.com/cpplint/cpplint) lives in `linting/` alongside its
-own guide. Run it from the project root:
+[cpplint](https://github.com/cpplint/cpplint) flags Google style-guide issues
+clang-format does not (naming, include order, copyright headers, and so on). It
+is **optional** and lives in `linting/`. Run it from the project root:
 
 ```sh
 make lint                                                              # style-check ./src and ./include
@@ -159,7 +180,7 @@ python3 linting/cpplint.py --linelength=120 --recursive ./src ./include   # same
 
 `make lint` passes `--linelength=120` so cpplint matches `.clang-format`
 (cpplint defaults to 80). See
-[`linting/HOW_TO_USE_CPPLINT.md`](linting/HOW_TO_USE_CPPLINT.md) for the full
+[`linting/HowToUseCppLint.md`](linting/HowToUseCppLint.md) for the full
 command list and how to silence warnings.
 
 ## Debugging
@@ -203,39 +224,39 @@ To pass command-line arguments, edit `"args"` in `.vscode/launch.json`:
 | `.vscode/settings.json` | Points clangd at `clangd-22` with `--clang-tidy`; makes clangd the C/C++ formatter with format-on-save; disables CMake Tools auto-configure and the C/C++ "debug active file" shortcut |
 | `.clang-tidy` | Which clang-tidy checks run (project root, not `.vscode/`) |
 
----
+## Reference
 
-## Appendix: using CMake directly
+### Using CMake directly
 
-The `makefile` targets above are thin wrappers around these commands. Use them
+The `makefile` targets are thin wrappers around these commands. Use them
 directly only if you need a step the wrapper doesn't cover.
 
-### Configure
+#### Configure
 Reads `CMakeLists.txt` and generates the build files into the `out` folder.
 Run from the same directory that contains `CMakeLists.txt`:
 ```sh
 cmake -B out
 ```
 
-### Build
+#### Build
 Compiles the generated build system in the `out` folder:
 ```sh
 cmake --build out
 ```
 
-### Run
+#### Run
 ```sh
 ./out/executableBinary
 ```
 
-### Debug build
+#### Debug build
 Reconfigure with debug symbols (no optimization, full `-g`):
 ```sh
 cmake -B out --fresh -DCMAKE_BUILD_TYPE=Debug
 cmake --build out
 ```
 
-### Clean rebuild
+#### Clean rebuild
 Discards the cached configuration and reconfigures from scratch. Use this
 after changing the compiler or other cached settings:
 ```sh
@@ -243,17 +264,17 @@ cmake -B out --fresh
 cmake --build out
 ```
 
-### Setting variables on the command line
+#### Setting variables on the command line
 Any CMake variable can be set at configure time with `-D`:
 ```sh
 cmake -B out -DCMAKE_BUILD_TYPE=RelWithDebInfo
 ```
 
-## Appendix: CMake directive reference
+### CMake directive reference
 
 Reference for the directives used (or usable) in `CMakeLists.txt`.
 
-### `CXX_STANDARD`
+#### `CXX_STANDARD`
 The `CXX_STANDARD` property specifies which C++ standard to use. CMake version
 requirements by standard:
 - C++11/C++14: CMake 3.1+
@@ -264,14 +285,14 @@ requirements by standard:
 
 See [CMake CXX_STANDARD documentation](https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html) for details.
 
-### `add_executable`
+#### `add_executable`
 ```cmake
 add_executable(myprogram a.cpp b.cpp)
 ```
 Defines an executable named `myprogram` built from `a.cpp` and `b.cpp`.
 List every `.cpp` file that makes up the program.
 
-### `add_compile_options`
+#### `add_compile_options`
 ```cmake
 add_compile_options(-Wall -Wextra)
 ```
@@ -279,7 +300,7 @@ Adds flags to the compiler for all targets. `-Wall -Wextra` enable the common
 warning sets and are strongly recommended for catching bugs early.
 (`-Wpedantic` can be added to warn about non-standard extensions.)
 
-### `set(CMAKE_CXX_COMPILER ...)`
+#### `set(CMAKE_CXX_COMPILER ...)`
 ```cmake
 set(CMAKE_CXX_COMPILER clang++)
 ```
@@ -290,7 +311,7 @@ portable:
 cmake -B out -DCMAKE_CXX_COMPILER=clang++
 ```
 
-### `set(CMAKE_BUILD_TYPE ...)`
+#### `set(CMAKE_BUILD_TYPE ...)`
 ```cmake
 set(CMAKE_BUILD_TYPE Debug)
 ```
