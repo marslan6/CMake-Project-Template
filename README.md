@@ -27,10 +27,11 @@ A minimal CMake project template targeting C++23 with GCC 15.
 **LLVM 22** supplies `clangd-22` (language server), `clang-tidy-22` (static
 analysis) and `clang-format-22` (formatter). Prefer a recent LLVM: Ubuntu
 24.04's own package is clang-tidy 18, which predates GCC 15's libstdc++ and may
-not parse its C++23 headers. Install from apt.llvm.org with the bundled
-`llvm.sh`:
+not parse its C++23 headers. Install from apt.llvm.org with its official
+`llvm.sh` script:
 
 ```sh
+wget https://apt.llvm.org/llvm.sh
 chmod +x llvm.sh
 sudo ./llvm.sh 22
 sudo apt install clangd-22 clang-tidy-22 clang-format-22
