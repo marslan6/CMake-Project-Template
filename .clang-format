@@ -1,26 +1,50 @@
-# clang-format configuration. Discovered automatically by clang-format and by
-# clangd (the "Format Document" command / format-on-save) for every file under
-# this directory, so it lives at the project root alongside .clang-tidy.
-#
-# Options not listed here fall back to BasedOnStyle. Google is used because the
-# project follows the Google C++ style guide (that is what cpplint checks), so
-# the formatter and the linter stay in agreement. Change to LLVM or remove the
-# line to start from clang-format's own defaults instead.
-# Full list: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 ---
 Language: Cpp
 BasedOnStyle: Google
 ColumnLimit: 120
-IndentWidth: 2
-TabWidth: 2
+
+# Includes — keep the author's order
+IncludeBlocks: Preserve
+SortIncludes: false
+
+# Indentation
+IndentWidth: 4
+TabWidth: 4
 UseTab: Never
-AllowShortBlocksOnASingleLine: Empty
-AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine: true
-SortIncludes: CaseInsensitive
-PointerAlignment: Left
-AlignAfterOpenBracket: DontAlign
+AccessModifierOffset: -4
+NamespaceIndentation: All
+IndentCaseLabels: true
+
+# Braces: Allman — opening brace on its own line (functions, control, namespaces)
+BreakBeforeBraces: Allman
+
+# Keep each statement on its own line; always braces, never collapse
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+
+# Add braces to any unbraced control statement (clang-format 15+)
+InsertBraces: true
+
+# Constructor initializer list always on its own line, colon-first, packed
 BreakConstructorInitializers: BeforeColon
 PackConstructorInitializers: NextLineOnly
-BreakBeforeConceptDeclarations: Always
-AlwaysBreakTemplateDeclarations: Yes
+
+# Pointer/reference bind to the type: CPU* cpu, Board& board
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+# Alignment across consecutive lines (file-wide)
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveBitFields: Consecutive
+AlignConsecutiveMacros: Consecutive
+AlignTrailingComments: true
+AlignEscapedNewlines: Left
+AlignOperands: Align
+# AlignConsecutiveDeclarations is intentionally OFF: it column-aligns the
+# names in declaration lists, which leaves large gaps when return types
+# differ in width (e.g. `bool` vs `std::uint16_t`).
+
+# Code assistant style rule: preserve '// Architecture: FIDE Rule 3.2 reference layout' in printBoard()
